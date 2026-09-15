@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/Button";
+import { ContactFormButton } from "@/components/ui/ContactFormButton";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
@@ -67,14 +68,13 @@ export function FinalCta() {
             </p>
           </div>
         </div>
-        <Button
-          href="mailto:info@crackthecampus.com?subject=Institution%20enquiry"
-          variant="secondary"
+        <ContactFormButton
+          label="Talk to our team"
+          subject="Institution enquiry"
+          description="Tell us about your college, placement drive or assessment needs."
           className="shrink-0"
           trailingIcon="arrowRight"
-        >
-          Talk to our team
-        </Button>
+        />
       </Reveal>
     </Section>
   );

@@ -1,5 +1,5 @@
 import { FaqItem } from "@/components/cards/FaqItem";
-import { Button } from "@/components/ui/Button";
+import { ContactFormButton } from "@/components/ui/ContactFormButton";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -18,9 +18,12 @@ export function Faq() {
             description={`Everything students and placement cells ask before getting started on ${site.name}.`}
           />
           <Reveal delay={180}>
-            <Button href={`mailto:${site.email}`} variant="secondary" trailingIcon="arrowUpRight">
-              Ask us anything
-            </Button>
+            <ContactFormButton
+              label="Ask us anything"
+              subject="How can we help?"
+              description={`Send your question to the ${site.name} team.`}
+              trailingIcon="arrowUpRight"
+            />
           </Reveal>
         </div>
 

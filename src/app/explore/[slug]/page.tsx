@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
+import { ContactFormButton } from "@/components/ui/ContactFormButton";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Icon } from "@/components/ui/Icon";
 import { Section } from "@/components/ui/Section";
@@ -114,9 +114,12 @@ export default async function PathwayPage({ params }: PathwayPageProps) {
                 Start this pathway free, practise at your pace, and use your results to build a stronger placement profile.
               </p>
             </div>
-            <Button href="mailto:info@crackthecampus.com?subject=Pathway%20enquiry" trailingIcon="arrowRight">
-              Start this pathway
-            </Button>
+            <ContactFormButton
+              label="Start this pathway"
+              subject={`Start ${pathway.title}`}
+              description={`Tell the ${pathway.title} team where you are in your preparation.`}
+              trailingIcon="arrowRight"
+            />
             <p className="text-xs text-muted">Free student plan. No credit card required.</p>
           </Card>
         </div>
