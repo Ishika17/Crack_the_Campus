@@ -1,5 +1,6 @@
 "use client";
 
+import { createPortal } from "react-dom";
 import { useEffect, useState } from "react";
 
 import { Button, type ButtonSize, type ButtonVariant } from "@/components/ui/Button";
@@ -65,7 +66,8 @@ export function ContactFormButton({
         {label}
       </Button>
 
-      {open ? (
+      {open
+        ? createPortal(
         <div
           className="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto bg-black/45 p-4"
           role="presentation"
@@ -129,8 +131,10 @@ export function ContactFormButton({
               </form>
             )}
           </div>
-        </div>
-      ) : null}
+        </div>,
+        document.body,
+      )
+        : null}
     </>
   );
 }
