@@ -6,8 +6,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "check:fonts": "node scripts/check-font-subset.mjs",
+    "verify": "npm run typecheck && npm run lint && npm run check:fonts && npm run build"
   },
+  "//browserslist": "Tailwind v4 already requires these engines (@property, color-mix, oklab), so transpiling JS any lower would ship polyfills no visitor of this site can use. Drops ~13 KB of legacy JavaScript.",
+  "browserslist": [
+    "chrome >= 111",
+    "edge >= 111",
+    "firefox >= 128",
+    "safari >= 16.4",
+    "opera >= 97"
+  ],
   "dependencies": {
     "next": "16.3.5",
     "react": "19.2.8",

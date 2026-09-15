@@ -1,26 +1,474 @@
 @import "tailwindcss";
 
+/* The theme is an explicit choice stored on `<html>`, not an OS preference, so
+   `dark:` is redefined to follow that attribute. Needed in only a couple of
+   places — almost all theming happens through the semantic colour tokens
+   below, which swap themselves. */
+@custom-variant dark ([data-theme="dark"] &);
+
+/* ==========================================================================
+   Design tokens
+
+   Every colour is a semantic CSS variable, mapped into Tailwind's theme with
+   `@theme inline`. Because the utilities compile to `var(--surface)` rather
+   than a literal hex, re-theming the whole site — including the dark theme
+   below — is a matter of redefining variables, never touching components.
+   ========================================================================== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+
+  --surface: #ffffff;
+  --surface-2: #f5f7fc;
+  --surface-3: #ebeff8;
+  /* "Spotlight" is the high-contrast feature surface used by the Sprint
+     section, the Pro-Suite pillar and the closing CTA. It stays dark in BOTH
+     themes — it is a deliberate emphasis panel, not a literal inversion.
+     Flipping it to white in the dark theme dropped a glaring white band into
+     the middle of the page and broke every `bg-white/10` detail layered on
+     it. */
+  --surface-spotlight: #0a0d1a;
+
+  --text: #0b1020;
+  --text-muted: #58617c;
+  --text-on-spotlight: #f6f8ff;
+  --text-on-spotlight-muted: #a6afc9;
+
+  --line: #e3e8f3;
+  --line-strong: #cbd3e5;
+  --line-spotlight: #22283c;
+
+  --brand: #2f4bff;
+  --brand-strong: #1e33d8;
+  --brand-soft: #eaeeff;
+  --brand-contrast: #ffffff;
+
+  --accent: #ff7a1a;
+  --accent-soft: #fff2e7;
+
+  --success: #0d9b74;
+  --success-soft: #e4f7f1;
+
+  /* `*-ink` variants are the only colours used for *text* on a `*-soft`
+     tint. The vivid brand colours are reserved for icons, fills and bars,
+     where WCAG's 4.5:1 text rule does not apply — this keeps small labels
+     legible without dulling the palette. */
+  --brand-ink: #1d2fbd;
+  --accent-ink: #9c3b00;
+  --success-ink: #05624a;
+
+  /* Named `--elevation-*` rather than `--shadow-*` so they cannot collide with
+     Tailwind's own `--shadow-*` theme namespace below. */
+  --elevation-soft: 0 1px 2px rgb(11 16 32 / 0.05), 0 1px 3px rgb(11 16 32 / 0.04);
+  --elevation-card: 0 12px 32px -14px rgb(11 16 32 / 0.16);
+  --elevation-float: 0 28px 64px -24px rgb(11 16 32 / 0.28);
+  --elevation-brand: 0 14px 34px -14px rgb(47 75 255 / 0.5);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --surface: #080b14;
+  --surface-2: #0e1220;
+  --surface-3: #161c2e;
+  /* Raised, slightly cooler than `--surface` so the panel still reads as a
+     distinct band without becoming a bright flash. */
+  --surface-spotlight: #141a33;
+
+  --text: #eef1f9;
+  --text-muted: #99a2bd;
+  --text-on-spotlight: #f2f5ff;
+  --text-on-spotlight-muted: #a3adca;
+
+  --line: #1d2334;
+  --line-strong: #2b3348;
+  --line-spotlight: #2a3352;
+
+  --brand: #7d92ff;
+  --brand-strong: #9aabff;
+  --brand-soft: #141b3a;
+  --brand-contrast: #060814;
+
+  --accent: #ff9445;
+  --accent-soft: #2a1a0d;
+
+  --success: #34c79c;
+  --success-soft: #0d2620;
+
+  --brand-ink: #aab8ff;
+  --accent-ink: #ffb079;
+  --success-ink: #6fe0bd;
+
+  --elevation-soft: 0 1px 2px rgb(0 0 0 / 0.5);
+  --elevation-card: 0 12px 32px -14px rgb(0 0 0 / 0.65);
+  --elevation-float: 0 28px 64px -24px rgb(0 0 0 / 0.8);
+  --elevation-brand: 0 14px 34px -14px rgb(125 146 255 / 0.4);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-surface-spotlight: var(--surface-spotlight);
+
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-on-spotlight: var(--text-on-spotlight);
+  --color-on-spotlight-muted: var(--text-on-spotlight-muted);
+
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-line-spotlight: var(--line-spotlight);
+
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-contrast: var(--brand-contrast);
+
+  --color-brand-ink: var(--brand-ink);
+
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-ink: var(--accent-ink);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-success-ink: var(--success-ink);
+
+  --shadow-soft: var(--elevation-soft);
+  --shadow-card: var(--elevation-card);
+  --shadow-float: var(--elevation-float);
+  --shadow-brand: var(--elevation-brand);
+
+  --radius-card: 1.25rem;
+  --radius-panel: 1.75rem;
+
+  /* Fluid type scale — no JS, no breakpoint jumps between phone and desktop. */
+  --text-display: clamp(2.375rem, 5.6vw, 4.25rem);
+  --text-display--line-height: 1.04;
+  --text-display--letter-spacing: -0.032em;
+
+  --text-title: clamp(1.75rem, 3.4vw, 2.75rem);
+  --text-title--line-height: 1.12;
+  --text-title--letter-spacing: -0.024em;
+
+  --text-subtitle: clamp(1.125rem, 1.6vw, 1.3125rem);
+  --text-subtitle--line-height: 1.55;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  html {
+    /* Anchor targets clear the sticky header. */
+    scroll-padding-top: 6rem;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    background-color: var(--surface);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--brand);
+    color: var(--brand-contrast);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Smooth native <details> open/close without any JS. */
+  @supports (interpolate-size: allow-keywords) {
+    :root {
+      interpolate-size: allow-keywords;
+    }
+  }
+
+  /* Resting state for the data visuals, declared in `base` so the
+     motion rules below (unlayered, therefore higher priority) can override
+     them. A reduced-motion visitor keeps these values and so still sees each
+     bar and dial at its true position — never empty, never full. */
+  .meter-fill {
+    transform: scaleX(var(--meter-value, 1));
+  }
+
+  .ring-progress {
+    stroke-dashoffset: var(--ring-offset);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ==========================================================================
+   Animation system
+
+   Rules that hide or offset content live *inside*
+   `prefers-reduced-motion: no-preference`, so a reduced-motion visitor gets
+   the fully composed page with no initial state to recover from. Only
+   `transform` and `opacity` are animated — never width, height, top or
+   box-shadow — so every animation stays on the compositor.
+   ========================================================================== */
+
+@keyframes ctc-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.25rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Transform-only variant for the LCP heading: it paints at full opacity on
+   the first frame, so the entrance never delays the LCP measurement. */
+@keyframes ctc-lift {
+  from {
+    transform: translate3d(0, 0.875rem, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes ctc-marquee {
+  from {
+    transform: none;
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes ctc-ring-fill {
+  from {
+    stroke-dashoffset: var(--ring-length);
+  }
+  to {
+    stroke-dashoffset: var(--ring-offset);
+  }
+}
+
+@keyframes ctc-pulse-ring {
+  0% {
+    opacity: 0.55;
+    transform: scale(0.85);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* -- Scroll reveal: one shared IntersectionObserver flips [data-visible] -- */
+  [data-reveal] {
+    opacity: 0;
+    transform: translate3d(0, var(--reveal-y, 1.125rem), 0);
+    transition:
+      opacity 640ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
+      transform 640ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
+  }
+
+  [data-reveal][data-visible] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Elements already on screen when the document opens. They appear with no
+     transition: there was no scroll to reward, and the fade would otherwise
+     gate the LCP paint. Set by the inline reveal script's first batch. */
+  [data-reveal][data-instant] {
+    transition: none;
+  }
+
+  /* -- Above-the-fold entrances: CSS-driven, no JS to wait for -- */
+  .anim-rise {
+    animation: ctc-rise 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--anim-delay, 0ms);
+  }
+
+  .anim-lift {
+    animation: ctc-lift 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--anim-delay, 0ms);
+  }
+
+  /* -- Meters: scaleX is composited; animating width would relayout --
+     The resting value is declared with the utility itself, so a
+     reduced-motion visitor sees the correct fill rather than an empty or
+     full bar. Only the animation *from zero* lives in here. */
+  .meter-fill {
+    transform: scaleX(0);
+  }
+
+  [data-visible] .meter-fill {
+    transform: scaleX(var(--meter-value, 1));
+    transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1)
+      var(--meter-delay, 120ms);
+  }
+
+  /* -- Score ring: transition when revealed, keyframe when above the fold -- */
+  .ring-progress {
+    stroke-dashoffset: var(--ring-length);
+    transition: stroke-dashoffset 1400ms cubic-bezier(0.22, 1, 0.36, 1) 220ms;
+  }
+
+  [data-visible] .ring-progress {
+    stroke-dashoffset: var(--ring-offset);
+  }
+
+  .ring-armed .ring-progress {
+    animation: ctc-ring-fill 1500ms cubic-bezier(0.22, 1, 0.36, 1) 320ms both;
+  }
+
+  .pulse-ring {
+    animation: ctc-pulse-ring 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+}
+
+/* The marquee is decorative motion that never hides content, so it only needs
+   to be switched off rather than guarded. */
+.marquee-track {
+  animation: ctc-marquee var(--marquee-duration, 46s) linear infinite;
+}
+
+.legal-copy {
+  color: var(--color-muted);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.legal-copy h2 {
+  margin-top: 2.25rem;
+  color: var(--color-text);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.legal-copy h2:first-child {
+  margin-top: 0;
+}
+
+.legal-copy p {
+  margin-top: 0.75rem;
+}
+
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* Reading-progress bar under the header. Driven by a CSS scroll timeline, so
+   it costs zero JavaScript and zero scroll listeners. Purely decorative, so
+   browsers without `animation-timeline` simply never show it. */
+@keyframes ctc-scale-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.scroll-progress {
+  transform: scaleX(0);
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scroll-progress {
+      animation: ctc-scale-x linear;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+
+/* ==========================================================================
+   Small composite utilities
+   ========================================================================== */
+
+@utility edge-fade-x {
+  --edge-fade: linear-gradient(
+    to right,
+    transparent,
+    black 6%,
+    black 94%,
+    transparent
+  );
+  -webkit-mask-image: var(--edge-fade);
+  mask-image: var(--edge-fade);
+}
+
+@utility meter-track {
+  position: relative;
+  overflow: hidden;
+  border-radius: 999px;
+  background-color: var(--surface-3);
+}
+
+@utility meter-fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: 999px;
+  transform-origin: left center;
+}
+
+/* Grid/dot backdrop, drawn with gradients instead of a background image. */
+@utility backdrop-grid {
+  background-image:
+    linear-gradient(to right, var(--line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+@utility backdrop-glow {
+  background-image: radial-gradient(
+    60% 60% at 50% 0%,
+    color-mix(in oklab, var(--brand) 16%, transparent),
+    transparent 70%
+  );
+}
+
+/* Native <details> content animation, progressively enhanced. */
+@supports selector(::details-content) {
+  @media (prefers-reduced-motion: no-preference) {
+    .faq-item::details-content {
+      block-size: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition:
+        block-size 320ms cubic-bezier(0.22, 1, 0.36, 1),
+        content-visibility 320ms allow-discrete,
+        opacity 260ms ease;
+    }
+
+    .faq-item[open]::details-content {
+      block-size: auto;
+      opacity: 1;
+    }
+  }
 }
