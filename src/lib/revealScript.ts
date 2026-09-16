@@ -17,19 +17,10 @@
  *
  * ## Two strategies, chosen per element
  *
- * On the initial document the script measures each element once and splits
- * them:
- *
- *  - **Already on screen** → marked `data-instant` and revealed synchronously,
- *    so they paint with the first contentful paint and never transition.
- *    Fading in content that was visible the moment the page opened is an odd
- *    experience anyway — there is no scroll for it to reward — and it was the
- *    last thing holding LCP above FCP.
- *  - **Below the fold** → handed to an IntersectionObserver and animated on
- *    the way in, which is the actual point of the feature.
- *
- * The rect reads are batched into one pass before any attribute is written, so
- * this costs a single forced layout rather than one per element.
+ * The initial document and client-side navigations both use the same
+ * IntersectionObserver. This avoids a synchronous getBoundingClientRect pass
+ * during the critical render path; the observer already knows which elements
+ * are visible and reports them without forcing layout from JavaScript.
  *
  * After a client-side navigation everything goes through the observer, so
  * content on the new page animates normally.
@@ -41,15 +32,15 @@
  * immediately, so content is never trapped behind an animation.
  */
 export const REVEAL_SCRIPT = `(function(){
-var o=null,initial=true;
+var o=null;
 function reveal(n){n.setAttribute("data-visible","")}
 function revealAll(n){for(var i=0;i<n.length;i++)reveal(n[i])}
 function scan(){
 var n=document.querySelectorAll("[data-reveal]:not([data-visible])"),i;
 if(!n.length)return;
 try{
-if(window.matchMedia("(prefers-reduced-motion: reduce)").matches||!("IntersectionObserver" in window)){revealAll(n);initial=false;return}
-}catch(e){revealAll(n);initial=false;return}
+if(window.matchMedia("(prefers-reduced-motion: reduce)").matches||!("IntersectionObserver" in window)){revealAll(n);return}
+}catch(e){revealAll(n);return}
 if(!o)o=new IntersectionObserver(function(es){
 for(var j=0;j<es.length;j++){
 if(!es[j].isIntersecting)continue;
@@ -57,16 +48,6 @@ reveal(es[j].target);
 o.unobserve(es[j].target);
 }
 },{rootMargin:"0px 0px -8% 0px",threshold:0});
-if(initial){
-var h=window.innerHeight||0,onscreen=[];
-for(i=0;i<n.length;i++)onscreen.push(n[i].getBoundingClientRect().top<h);
-for(i=0;i<n.length;i++){
-if(onscreen[i]){n[i].setAttribute("data-instant","");reveal(n[i])}
-else o.observe(n[i]);
-}
-initial=false;
-return;
-}
 for(i=0;i<n.length;i++)o.observe(n[i]);
 }
 window.__ctcReveal=scan;

@@ -10,6 +10,93 @@ npm run dev          # http://localhost:3000
 npm run verify       # typecheck + lint + font-subset guard + production build
 ```
 
+## Assessment Notes
+
+### Setup
+
+```bash
+npm install
+npm run dev       # development server
+npm run verify    # typecheck, lint, font check and production build
+```
+
+### Technology Choices
+
+Next.js 16 with the App Router, React 19, TypeScript and Tailwind CSS v4 were
+chosen for static rendering, route-level code splitting, typed reusable UI and
+an architecture that can grow beyond a single landing page.
+
+### Architecture Overview
+
+The page is composed from reusable layout, section, card and UI components.
+Content is kept in typed files under `src/content`, while dynamic pathway pages
+use `/explore/[slug]` and `generateStaticParams` for build-time generation.
+
+### Dependencies Used and Why
+
+Runtime dependencies are limited to `next`, `react` and `react-dom`. No
+animation, icon, carousel or UI-kit dependency is needed: native browser APIs,
+CSS, inline SVG and server components cover the product surface.
+
+### Performance Optimizations
+
+- Static server rendering and route-level code splitting.
+- Only required interactive surfaces use client components.
+- Self-hosted Latin font through `next/font` with `display: swap`.
+- No raster images or third-party requests on the critical path.
+- CSS and native browser animations instead of a JavaScript animation library.
+- Reveal work uses one `IntersectionObserver` without a synchronous geometry scan.
+
+### Animation Approach
+
+CSS handles hero entrances, hover states, meters, the score ring and FAQ
+transitions. A shared `IntersectionObserver` adds reveal attributes, while
+`prefers-reduced-motion` disables hidden/offset animation states for users who
+request reduced motion.
+
+### Assumptions and Design Decisions
+
+The assessment uses static/mock content and does not require a backend. The
+contact form demonstrates the interaction flow without sending email. The
+student experience is the primary audience, with institution actions kept
+secondary. Real course data, authentication and submissions can be connected
+later without changing the component structure.
+
+### Known Limitations
+
+- Contact submissions are presentation-only until an email or API service is connected.
+- Lighthouse scores vary by device, browser, network and deployment region.
+- Legal pages contain a practical baseline policy and should receive legal review before production use.
+- Content currently lives in local typed files rather than a CMS or API.
+
+### What I Would Improve With More Time
+
+I would add real form delivery and validation, analytics and real-user Core Web
+Vitals, automated Playwright and accessibility tests, a CMS-backed content
+layer, and a performance budget in CI. I would also review the large DOM as the
+pathway catalogue grows and add real optimized imagery only where it improves
+the student experience.
+
+### Latest Deployed Lighthouse Audit
+
+Tested against the deployed Vercel URL with Lighthouse 13.4.1 using the
+Desktop preset. Values can vary slightly between runs and deployment regions.
+
+| Metric | Desktop |
+|---|---:|
+| First Contentful Paint | 0.5 s |
+| Largest Contentful Paint | 0.7 s |
+| Total Blocking Time | 40 ms |
+| Cumulative Layout Shift | 0 |
+| Speed Index | 4.7 s |
+| Accessibility | 100 |
+| Best Practices | 100 |
+| SEO | 100 |
+
+The desktop TBT is below the 200 ms target. The Lighthouse performance score
+itself is calculated from these metrics and should be recorded from the score
+shown at the top of the deployed audit.
+
 ---
 
 ## Measured results
