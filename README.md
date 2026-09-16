@@ -84,11 +84,11 @@ Desktop preset. Values can vary slightly between runs and deployment regions.
 
 | Metric | Desktop |
 |---|---:|
-| First Contentful Paint | 0.5 s |
+| First Contentful Paint | 0.4 s |
 | Largest Contentful Paint | 0.7 s |
-| Total Blocking Time | 40 ms |
+| Total Blocking Time | 110 ms |
 | Cumulative Layout Shift | 0 |
-| Speed Index | 4.7 s |
+| Speed Index | 0.7 s |
 | Accessibility | 100 |
 | Best Practices | 100 |
 | SEO | 100 |
@@ -96,6 +96,22 @@ Desktop preset. Values can vary slightly between runs and deployment regions.
 The desktop TBT is below the 200 ms target. The Lighthouse performance score
 itself is calculated from these metrics and should be recorded from the score
 shown at the top of the deployed audit.
+
+### Latest Mobile Lighthouse Audit
+
+Tested with the Lighthouse Mobile preset using the deployed production build.
+Values can vary slightly between runs and devices.
+
+| Metric | Mobile |
+|---|---:|
+| First Contentful Paint | 1.0 s |
+| Largest Contentful Paint | 1.7 s |
+| Total Blocking Time | 1000 ms |
+| Cumulative Layout Shift | 0 |
+| Speed Index | 2.1 s |
+
+The page keeps a stable layout with CLS `0`; mobile TBT remains the main area
+for future optimization.
 
 ---
 
